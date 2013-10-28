@@ -4,10 +4,11 @@ var fs = require("fs");
 var async = require("async");
 var path = require("path");
 var args = require("optimist").
-    usage("Usage: $0 --left [path] --right [path]").
-    demand(["left", "right"]).
+    usage("Usage: $0 --output [path] --left [path] --right [path]").
+    demand(["left", "right", "output"]).
     describe("left", "Left folder (earlier one) to compare").
     describe("right", "Right folder (later one) to compare").
+    describe("output", "The name of file, to which report will be generated").
     argv;
 
 
@@ -40,6 +41,7 @@ async.each([leftDir, rightDir], directoryExists, function(err) {
         diff.findDifferences({
             left: leftDirectory,
             right: rightDirectory,
+            output: args.output,
             done: function () {
                 console.log("Job finished successfully");
             }
