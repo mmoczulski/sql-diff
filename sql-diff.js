@@ -9,6 +9,8 @@ var args = require("optimist").
     describe("left", "Left folder (earlier one) to compare").
     describe("right", "Right folder (later one) to compare").
     describe("output", "The name of file, to which report will be generated").
+    describe("rd", "Path to a dictionary which holds all possible renamings - should be a JSON file, where keys are " +
+        "old names and values - new names").
     argv;
 
 
@@ -38,10 +40,21 @@ async.each([leftDir, rightDir], directoryExists, function(err) {
         var leftDirectory = directories[0];
         var rightDirectory = directories[1];
 
+        var renamingDictionary;
+
+        if (args.rd) {
+            if (fs.existsSync(args.rd)) {
+                renamingDictionary = JSON.parse(fs.readFileSync(args.rd));
+            } else {
+                console.warn("Path to Renaming dictionary file has been provided, but this file does not exist. Ignoring");
+            }
+        }
+
         diff.findDifferences({
             left: leftDirectory,
             right: rightDirectory,
             output: args.output,
+            renamingDictionary: renamingDictionary,
             done: function () {
                 console.log("Job finished successfully");
             }
