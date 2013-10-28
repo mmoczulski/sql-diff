@@ -1,7 +1,9 @@
+"use strict";
+
 var fs = require("fs");
 var async = require("async");
 var path = require("path");
-var arguments = require("optimist").
+var args = require("optimist").
     usage("Usage: $0 --left [path] --right [path]").
     demand(["left", "right"]).
     describe("left", "Left folder (earlier one) to compare").
@@ -9,8 +11,8 @@ var arguments = require("optimist").
     argv;
 
 
-var leftDir = arguments.left;
-var rightDir = arguments.right;
+var leftDir = args.left;
+var rightDir = args.right;
 
 var diff = require("./lib/diff");
 
@@ -35,8 +37,12 @@ async.each([leftDir, rightDir], directoryExists, function(err) {
         var leftDirectory = directories[0];
         var rightDirectory = directories[1];
 
-        diff.findDifferences(leftDirectory, rightDirectory, function(differences) {
-            console.log("Diff: ", differences);
+        diff.findDifferences({
+            left: leftDirectory,
+            right: rightDirectory,
+            done: function () {
+                console.log("Job finished successfully");
+            }
         });
     });
 });
